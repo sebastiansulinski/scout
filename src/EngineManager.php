@@ -25,6 +25,7 @@ class EngineManager extends Manager
      * Create an Algolia engine instance.
      *
      * @return \Laravel\Scout\Engines\AlgoliaEngine
+     * @throws \Exception
      */
     public function createAlgoliaDriver()
     {
@@ -32,7 +33,7 @@ class EngineManager extends Manager
 
         return new AlgoliaEngine(new Algolia(
             config('scout.algolia.id'), config('scout.algolia.secret')
-        ));
+        ), config('scout.record_chunk_link'));
     }
 
     /**

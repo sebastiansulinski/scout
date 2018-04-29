@@ -6,6 +6,7 @@ use Laravel\Scout\Builder;
 use AlgoliaSearch\Client as Algolia;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection as SupportCollection;
 
 class AlgoliaEngine extends Engine
 {
@@ -17,14 +18,59 @@ class AlgoliaEngine extends Engine
     protected $algolia;
 
     /**
+     * Record chunk key.
+     *
+     * @var string
+     */
+    private $recordChunkLink;
+
+    /**
      * Create a new engine instance.
      *
      * @param  \AlgoliaSearch\Client  $algolia
-     * @return void
+     * @param  string  $recordChunkLink
      */
-    public function __construct(Algolia $algolia)
+    public function __construct(Algolia $algolia, string $recordChunkLink = '_scout_chunk-')
     {
         $this->algolia = $algolia;
+
+        $this->recordChunkLink = $recordChunkLink;
+    }
+
+    /**
+     * Get chunk object id.
+     *
+     * @param  mixed  $key
+     * @param  int|null  $index
+     * @return mixed
+     */
+    public function chunkObjectId($key, int $index = null)
+    {
+        return is_null($index) ? $key : $key.$this->recordChunkLink.$index;
+    }
+
+    /**
+     * Split array to chunks.
+     *
+     * @param  array  $array
+     * @param  string  $key
+     * @param  int  $limit
+     * @return array
+     */
+    public function splitToChunks(array $array, string $key, int $limit)
+    {
+        if (strlen($array[$key]) <= $limit) {
+            return $array;
+        }
+
+        $chunks = explode(
+            PHP_EOL,
+            wordwrap(str_replace(PHP_EOL, '', $array[$key]), $limit, PHP_EOL)
+        );
+
+        return array_map(function($chunk) use ($array, $key) {
+            return array_merge($array, [$key => $chunk]);
+        }, $chunks);
     }
 
     /**
@@ -46,17 +92,53 @@ class AlgoliaEngine extends Engine
             $models->each->pushSoftDeleteMetadata();
         }
 
-        $index->addObjects($models->map(function ($model) {
-            $array = array_merge(
-                $model->toSearchableArray(), $model->scoutMetadata()
-            );
+        $objects = $models->reduce(function(Collection $objects, $model) {
+            return $this->addToObjectsCollection($objects, $model);
+        }, new Collection);
 
-            if (empty($array)) {
-                return;
-            }
+        $index->addObjects($objects->filter()->values()->all());
+    }
 
-            return array_merge(['objectID' => $model->getScoutKey()], $array);
-        })->filter()->values()->all());
+    /**
+     * Add items to collection of objects.
+     *
+     * @param  \Illuminate\Database\Eloquent\Collection  $objects
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function addToObjectsCollection(Collection $objects, $model)
+    {
+        if (!is_array(current($array = $model->toSearchableArray()))) {
+            $objects[] = $this->mapObject($array, $model);
+            return $objects;
+        }
+
+        foreach($array as $key => $subArray) {
+            $objects[] = $this->mapObject($subArray, $model, $key+1);
+        }
+
+        return $objects;
+    }
+
+    /**
+     * Map object.
+     *
+     * @param  array $array
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  int $appendToKey
+     * @return array
+     */
+    public function mapObject(array $array, $model, int $appendToKey = null)
+    {
+        $array = array_merge($array, $model->scoutMetadata());
+
+        if (empty($array)) {
+            return;
+        }
+
+        return array_merge([
+            'objectID' => static::chunkObjectId($model->getScoutKey(), $appendToKey)
+        ], $array);
     }
 
     /**
@@ -64,16 +146,17 @@ class AlgoliaEngine extends Engine
      *
      * @param  \Illuminate\Database\Eloquent\Collection  $models
      * @return void
+     * @throws \AlgoliaSearch\AlgoliaException
      */
     public function delete($models)
     {
         $index = $this->algolia->initIndex($models->first()->searchableAs());
 
-        $index->deleteObjects(
-            $models->map(function ($model) {
-                return $model->getScoutKey();
-            })->values()->all()
-        );
+        $objects = $models->reduce(function(Collection $objects, $model) {
+            return $this->addToObjectsCollection($objects, $model);
+        }, new Collection)->pluck('objectID')->values()->all();
+
+        $index->deleteObjects($objects);
     }
 
     /**
@@ -81,6 +164,7 @@ class AlgoliaEngine extends Engine
      *
      * @param  \Laravel\Scout\Builder  $builder
      * @return mixed
+     * @throws \AlgoliaSearch\AlgoliaException
      */
     public function search(Builder $builder)
     {
@@ -97,6 +181,7 @@ class AlgoliaEngine extends Engine
      * @param  int  $perPage
      * @param  int  $page
      * @return mixed
+     * @throws \AlgoliaSearch\AlgoliaException
      */
     public function paginate(Builder $builder, $perPage, $page)
     {
@@ -113,6 +198,7 @@ class AlgoliaEngine extends Engine
      * @param  \Laravel\Scout\Builder  $builder
      * @param  array  $options
      * @return mixed
+     * @throws \AlgoliaSearch\AlgoliaException
      */
     protected function performSearch(Builder $builder, array $options = [])
     {
@@ -174,16 +260,30 @@ class AlgoliaEngine extends Engine
 
         $models = $builder->whereIn(
             $model->getQualifiedKeyName(),
-            collect($results['hits'])->pluck('objectID')->values()->all()
+            $hits = $this->extractObjectIds(collect($results['hits']))
         )->get()->keyBy($model->getKeyName());
 
-        return Collection::make($results['hits'])->map(function ($hit) use ($models) {
-            $key = $hit['objectID'];
-
-            if (isset($models[$key])) {
-                return $models[$key];
+        return Collection::make($hits)->map(function ($hit) use ($models) {
+            if (isset($models[$hit])) {
+                return $models[$hit];
             }
         })->filter()->values();
+    }
+
+    /**
+     * Extract object ids from the collection of hits.
+     *
+     * @param  \Illuminate\Support\Collection  $hits
+     * @return array
+     */
+    public function extractObjectIds(SupportCollection $hits)
+    {
+        return $hits->pluck('objectID')->values()->map(function($id) {
+            if (is_string($id) && $length = strrpos($id, $this->recordChunkLink)) {
+                return substr($id, 0, $length);
+            }
+            return $id;
+        })->unique()->all();
     }
 
     /**

@@ -92,5 +92,9 @@ use Tests\Fixtures\SearchableTestModel;
 
 function config($arg)
 {
+    if ($arg === 'scout.record_chunk_link') {
+        return '_scout_chunk-';
+    }
+
     return false;
 }
