@@ -97,8 +97,9 @@ class AlgoliaEngine extends Engine
         }, new Collection);
 
         // todo
-        // find records by `distinct_attribute`
-        // $index->setSettings(['attributeForDistinct' => 'url']);
+        // find records by a distinct attribute
+        // remove ones that over the new count
+        // and update the other ones
 
         // https://www.algolia.com/doc/guides/indexing/structuring-your-data/?language=php#indexing-long-documents
         // https://www.algolia.com/doc/api-reference/api-parameters/distinct/
