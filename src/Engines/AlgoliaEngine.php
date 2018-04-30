@@ -94,12 +94,6 @@ class AlgoliaEngine extends Engine
 
         $objects = $models->reduce([$this, 'addToObjectsCollection'], new Collection);
 
-        $recordIds = $objects->pluck('recordID')->unique()->map(function($recordID) {
-            return 'recordID:'.$recordID;
-        })->toArray();
-
-        $index->deleteBy(['filters' => $recordIds]);
-
         $index->addObjects($objects->filter()->values()->all());
     }
 
