@@ -96,6 +96,14 @@ class AlgoliaEngine extends Engine
             return $this->addToObjectsCollection($objects, $model);
         }, new Collection);
 
+        // todo
+        // if $objects->count() > 1
+        // $index->setSettings(['attributeForDistinct' => 'url']);
+
+        // https://www.algolia.com/doc/guides/indexing/structuring-your-data/?language=php#indexing-long-documents
+        // https://www.algolia.com/doc/api-reference/api-parameters/distinct/
+        // https://www.algolia.com/doc/api-reference/api-parameters/attributeForDistinct/
+
         $index->addObjects($objects->filter()->values()->all());
     }
 
