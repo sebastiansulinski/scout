@@ -94,14 +94,11 @@ class AlgoliaEngine extends Engine
 
         $objects = $models->reduce([$this, 'addToObjectsCollection'], new Collection);
 
-        // todo
-        // find records by a distinct attribute
-        // remove ones that over the new count
-        // and update the other ones
+        $recordIds = $objects->pluck('recordID')->unique()->map(function($recordID) {
+            return 'recordID:'.$recordID;
+        })->toArray();
 
-        // https://www.algolia.com/doc/guides/indexing/structuring-your-data/?language=php#indexing-long-documents
-        // https://www.algolia.com/doc/api-reference/api-parameters/distinct/
-        // https://www.algolia.com/doc/api-reference/api-parameters/attributeForDistinct/
+        $index->deleteBy(['filters' => $recordIds]);
 
         $index->addObjects($objects->filter()->values()->all());
     }

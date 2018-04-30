@@ -82,6 +82,7 @@ class AlgoliaEngineTest extends AbstractTestCase
     {
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
+        $index->shouldReceive('deleteBy')->with(['filters' => ['recordID:1']]);
         $index->shouldReceive('addObjects')->with([[
             'id' => 1,
             'objectID' => 1,
@@ -96,6 +97,7 @@ class AlgoliaEngineTest extends AbstractTestCase
     {
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
+        $index->shouldReceive('deleteBy')->with(['filters' => ['recordID:1']]);
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
@@ -128,6 +130,7 @@ class AlgoliaEngineTest extends AbstractTestCase
     {
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
+        $index->shouldReceive('deleteBy')->with(['filters' => ['recordID:my-algolia-key.1']]);
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
@@ -160,6 +163,7 @@ class AlgoliaEngineTest extends AbstractTestCase
     {
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
+        $index->shouldReceive('deleteBy')->with(['filters' => ['recordID:1']]);
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
@@ -256,6 +260,7 @@ class AlgoliaEngineTest extends AbstractTestCase
     {
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
+        $index->shouldReceive('deleteBy')->with(['filters' => ['recordID:my-algolia-key.1']]);
         $index->shouldReceive('addObjects')->with([[
             'id' => 1,
             'objectID' => 'my-algolia-key.1',
@@ -270,6 +275,7 @@ class AlgoliaEngineTest extends AbstractTestCase
     {
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
+        $index->shouldReceive('deleteBy')->with(['filters' => ['recordID:my-algolia-key.1']]);
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
