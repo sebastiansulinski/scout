@@ -115,10 +115,7 @@ class AlgoliaEngine extends Engine
      */
     public function addToObjectsCollection(Collection $objects, $model)
     {
-        // todo
-        // check for numerical index
-        // due to algolia accepting array indexes
-        if (!is_array(current($array = $model->toSearchableArray()))) {
+        if (array_keys($array = $model->toSearchableArray()) !== range(0, count($array) - 1)) {
             $objects[] = $this->mapObject($array, $model);
             return $objects;
         }
