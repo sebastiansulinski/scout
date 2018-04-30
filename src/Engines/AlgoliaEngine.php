@@ -97,7 +97,7 @@ class AlgoliaEngine extends Engine
         }, new Collection);
 
         // todo
-        // if $objects->count() > 1
+        // find records by `distinct_attribute`
         // $index->setSettings(['attributeForDistinct' => 'url']);
 
         // https://www.algolia.com/doc/guides/indexing/structuring-your-data/?language=php#indexing-long-documents
@@ -145,7 +145,7 @@ class AlgoliaEngine extends Engine
         }
 
         return array_merge([
-            'objectID' => static::chunkObjectId($model->getScoutKey(), $appendToKey)
+            'objectID' => $this->chunkObjectId($model->getScoutKey(), $appendToKey)
         ], $array);
     }
 
