@@ -85,6 +85,7 @@ class AlgoliaEngineTest extends AbstractTestCase
         $index->shouldReceive('addObjects')->with([[
             'id' => 1,
             'objectID' => 1,
+            'recordID' => 1,
         ]]);
 
         $engine = new AlgoliaEngine($client);
@@ -99,18 +100,21 @@ class AlgoliaEngineTest extends AbstractTestCase
             [
                 'id' => 1,
                 'objectID' => '1_scout_chunk-1',
+                'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
                 'objectID' => '1_scout_chunk-2',
+                'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
                 'objectID' => '1_scout_chunk-3',
+                'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
             ],
@@ -128,18 +132,21 @@ class AlgoliaEngineTest extends AbstractTestCase
             [
                 'id' => 1,
                 'objectID' => 'my-algolia-key.1_scout_chunk-1',
+                'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
                 'objectID' => 'my-algolia-key.1_scout_chunk-2',
+                'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
                 'objectID' => 'my-algolia-key.1_scout_chunk-3',
+                'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
             ],
@@ -157,18 +164,21 @@ class AlgoliaEngineTest extends AbstractTestCase
             [
                 'id' => 1,
                 'objectID' => '1-1',
+                'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
                 'objectID' => '1-2',
+                'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
                 'objectID' => '1-3',
+                'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
             ],
@@ -249,6 +259,7 @@ class AlgoliaEngineTest extends AbstractTestCase
         $index->shouldReceive('addObjects')->with([[
             'id' => 1,
             'objectID' => 'my-algolia-key.1',
+            'recordID' => 'my-algolia-key.1',
         ]]);
 
         $engine = new AlgoliaEngine($client);
@@ -263,18 +274,21 @@ class AlgoliaEngineTest extends AbstractTestCase
             [
                 'id' => 1,
                 'objectID' => 'my-algolia-key.1_scout_chunk-1',
+                'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
                 'objectID' => 'my-algolia-key.1_scout_chunk-2',
+                'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
                 'objectID' => 'my-algolia-key.1_scout_chunk-3',
+                'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
             ],

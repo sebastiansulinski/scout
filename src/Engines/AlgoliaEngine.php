@@ -144,7 +144,8 @@ class AlgoliaEngine extends Engine
         }
 
         return array_merge([
-            'objectID' => $this->chunkObjectId($model->getScoutKey(), $appendToKey)
+            'recordID' => $key = $model->getScoutKey(),
+            'objectID' => $this->chunkObjectId($key, $appendToKey),
         ], $array);
     }
 
@@ -159,9 +160,8 @@ class AlgoliaEngine extends Engine
     {
         $index = $this->algolia->initIndex($models->first()->searchableAs());
 
-        $objects = $models->reduce(function(Collection $objects, $model) {
-            return $this->addToObjectsCollection($objects, $model);
-        }, new Collection)->pluck('objectID')->values()->all();
+        $objects = $models->reduce([$this, 'addToObjectsCollection'], new Collection)
+            ->pluck('objectID')->values()->all();
 
         $index->deleteObjects($objects);
     }
