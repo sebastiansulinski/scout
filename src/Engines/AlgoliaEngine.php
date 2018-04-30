@@ -92,9 +92,7 @@ class AlgoliaEngine extends Engine
             $models->each->pushSoftDeleteMetadata();
         }
 
-        $objects = $models->reduce(function(Collection $objects, $model) {
-            return $this->addToObjectsCollection($objects, $model);
-        }, new Collection);
+        $objects = $models->reduce([$this, 'addToObjectsCollection'], new Collection);
 
         // todo
         // find records by a distinct attribute
