@@ -30,7 +30,7 @@ class AlgoliaEngine extends Engine
      * @param  \AlgoliaSearch\Client  $algolia
      * @param  string  $recordChunkLink
      */
-    public function __construct(Algolia $algolia, string $recordChunkLink = '_scout_chunk-')
+    public function __construct(Algolia $algolia, string $recordChunkLink = '-')
     {
         $this->algolia = $algolia;
 

@@ -99,21 +99,21 @@ class AlgoliaEngineTest extends AbstractTestCase
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
-                'objectID' => '1_scout_chunk-1',
+                'objectID' => '1-1',
                 'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
-                'objectID' => '1_scout_chunk-2',
+                'objectID' => '1-2',
                 'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
-                'objectID' => '1_scout_chunk-3',
+                'objectID' => '1-3',
                 'recordID' => 1,
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
@@ -131,21 +131,21 @@ class AlgoliaEngineTest extends AbstractTestCase
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
-                'objectID' => 'my-algolia-key.1_scout_chunk-1',
+                'objectID' => 'my-algolia-key.1-1',
                 'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
-                'objectID' => 'my-algolia-key.1_scout_chunk-2',
+                'objectID' => 'my-algolia-key.1-2',
                 'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
-                'objectID' => 'my-algolia-key.1_scout_chunk-3',
+                'objectID' => 'my-algolia-key.1-3',
                 'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
@@ -244,9 +244,9 @@ class AlgoliaEngineTest extends AbstractTestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([new AlgoliaEngineTestChunkedSearchableArrayModel]));
 
         $results = $engine->map(['nbHits' => 1, 'hits' => [
-            ['objectID' => '1_scout_chunk-1', 'id' => 1],
-            ['objectID' => '1_scout_chunk-2', 'id' => 1],
-            ['objectID' => '1_scout_chunk-3', 'id' => 1],
+            ['objectID' => '1-1', 'id' => 1],
+            ['objectID' => '1-2', 'id' => 1],
+            ['objectID' => '1-3', 'id' => 1],
         ]], $model);
 
         $this->assertEquals(1, count($results));
@@ -273,21 +273,21 @@ class AlgoliaEngineTest extends AbstractTestCase
         $index->shouldReceive('addObjects')->with([
             [
                 'id' => 1,
-                'objectID' => 'my-algolia-key.1_scout_chunk-1',
+                'objectID' => 'my-algolia-key.1-1',
                 'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 1',
             ],
             [
                 'id' => 1,
-                'objectID' => 'my-algolia-key.1_scout_chunk-2',
+                'objectID' => 'my-algolia-key.1-2',
                 'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 2',
             ],
             [
                 'id' => 1,
-                'objectID' => 'my-algolia-key.1_scout_chunk-3',
+                'objectID' => 'my-algolia-key.1-3',
                 'recordID' => 'my-algolia-key.1',
                 'name' => 'Name',
                 'body' => 'Body chunk 3',
@@ -303,9 +303,9 @@ class AlgoliaEngineTest extends AbstractTestCase
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
         $index->shouldReceive('deleteObjects')->with([
-            '1_scout_chunk-1',
-            '1_scout_chunk-2',
-            '1_scout_chunk-3',
+            '1-1',
+            '1-2',
+            '1-3',
         ]);
 
         $engine = new AlgoliaEngine($client);
@@ -327,9 +327,9 @@ class AlgoliaEngineTest extends AbstractTestCase
         $client = Mockery::mock('AlgoliaSearch\Client');
         $client->shouldReceive('initIndex')->with('table')->andReturn($index = Mockery::mock('StdClass'));
         $index->shouldReceive('deleteObjects')->with([
-            'my-algolia-key.1_scout_chunk-1',
-            'my-algolia-key.1_scout_chunk-2',
-            'my-algolia-key.1_scout_chunk-3'
+            'my-algolia-key.1-1',
+            'my-algolia-key.1-2',
+            'my-algolia-key.1-3'
         ]);
 
         $engine = new AlgoliaEngine($client);

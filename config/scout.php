@@ -68,7 +68,7 @@ return [
     |
     */
 
-    'record_chunk_link' => env('SCOUT_RECORD_CHUNK_LINK', '_scout_chunk-'),
+    'record_chunk_link' => env('SCOUT_RECORD_CHUNK_LINK', '-'),
 
     /*
     |--------------------------------------------------------------------------
